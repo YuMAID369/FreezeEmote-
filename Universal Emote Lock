@@ -17,7 +17,7 @@ FreezeButton.Parent = ScreenGui
 FreezeButton.BackgroundTransparency = 1 -- Fundo totalmente transparente
 FreezeButton.BorderSizePixel = 0 -- Remove qualquer borda residual
 FreezeButton.Position = UDim2.new(0.85, 0, 0.70, 0)
-FreezeButton.Size = UDim2.new(0, 65, 0, 65)
+FreezeButton.Size = UDim2.new(0, 68, 0, 68)
 FreezeButton.Image = ID_MOVENDO
 FreezeButton.ScaleType = Enum.ScaleType.Fit
 
