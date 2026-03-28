@@ -1,0 +1,2 @@
+# FreezeEmote-
+Lock emote
