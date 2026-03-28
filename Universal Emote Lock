@@ -17,7 +17,7 @@ FreezeButton.Parent = ScreenGui
 FreezeButton.BackgroundTransparency = 1 -- Fundo totalmente transparente
 FreezeButton.BorderSizePixel = 0 -- Remove qualquer borda residual
 FreezeButton.Position = UDim2.new(0.85, 0, 0.70, 0)
-FreezeButton.Size = UDim2.new(0, 80, 0, 80)
+FreezeButton.Size = UDim2.new(0, 70, 0, 70)
 FreezeButton.Image = ID_MOVENDO
 FreezeButton.ScaleType = Enum.ScaleType.Fit
 
@@ -54,17 +54,17 @@ FreezeButton.MouseButton1Click:Connect(function()
     local humanoid = character:FindFirstChild("Humanoid")
     local animateScript = character:FindFirstChild("Animate")
     if not humanoid then return end
-    
+
     isPaused = not isPaused
-    
+
     if isPaused then
         -- MODO: ESTÁTUA
         FreezeButton.Image = ID_PARALISADO
-        
+
         if animateScript then
             animateScript.Disabled = true
         end
-        
+
         local playingTracks = humanoid:GetPlayingAnimationTracks()
         for _, track in ipairs(playingTracks) do
             track:AdjustSpeed(0)
@@ -72,11 +72,11 @@ FreezeButton.MouseButton1Click:Connect(function()
     else
         -- MODO: NORMAL
         FreezeButton.Image = ID_MOVENDO
-        
+
         if animateScript then
             animateScript.Disabled = false
         end
-        
+
         local playingTracks = humanoid:GetPlayingAnimationTracks()
         for _, track in ipairs(playingTracks) do
             track:AdjustSpeed(1)
