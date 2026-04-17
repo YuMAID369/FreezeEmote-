@@ -1,41 +1,48 @@
--- [[ CONFIGURAÇÃO DA GUI - APENAS ÍCONE ]] --
+-- [[ CONFIGURAÇÃO DA GUI - FINAL ]] --
 local ScreenGui = Instance.new("ScreenGui")
 local FreezeButton = Instance.new("ImageButton")
-local UICorner = Instance.new("UICorner")
 
 -- Seus IDs
-local ID_MOVENDO = "rbxassetid://110718214871194"
-local ID_PARALISADO = "rbxassetid://98071581527161"
+local ID_MOVENDO = "rbxassetid://110202800914637"
+local ID_PARALISADO = "rbxassetid://108879366953239"
 
-ScreenGui.Name = "FreezeEmote_IconOnly"
+ScreenGui.Name = "FreezeEmote_Final_V6"
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ResetOnSpawn = false
 
--- Configuração do Botão (Sem bordas, fundo transparente)
+-- Botão apenas imagem
 FreezeButton.Name = "FreezeButton"
 FreezeButton.Parent = ScreenGui
-FreezeButton.BackgroundTransparency = 1 -- Fundo totalmente transparente
-FreezeButton.BorderSizePixel = 0 -- Remove qualquer borda residual
+FreezeButton.BackgroundTransparency = 1
+FreezeButton.BorderSizePixel = 0
 FreezeButton.Position = UDim2.new(0.85, 0, 0.70, 0)
-FreezeButton.Size = UDim2.new(0, 68, 0, 68)
+FreezeButton.Size = UDim2.new(0, 65, 0, 65)
 FreezeButton.Image = ID_MOVENDO
 FreezeButton.ScaleType = Enum.ScaleType.Fit
 
--- [[ SISTEMA DE ARRASTAR ]] --
+-- [[ SISTEMA DE ARRASTAR COM TRAVA ]] --
+local isPaused = false -- Variável de controle movida para cima para ser acessível
 local dragging, dragInput, dragStart, startPos
+
 local function update(input)
+    -- AJUSTE: Só permite mover se NÃO estiver pausado
+    if isPaused then return end
+    
     local delta = input.Position - dragStart
     FreezeButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 end
 
 FreezeButton.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true
-        dragStart = input.Position
-        startPos = FreezeButton.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then dragging = false end
-        end)
+        -- AJUSTE: Só inicia o arraste se não estiver pausado
+        if not isPaused then
+            dragging = true
+            dragStart = input.Position
+            startPos = FreezeButton.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+            end)
+        end
     end
 end)
 
@@ -45,43 +52,44 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
--- [[ LÓGICA DE ESTÁTUA AMBULANTE REAL ]] --
-local isPaused = false
+-- [[ LÓGICA DE CLIQUE DUPLO E CONGELAMENTO ]] --
+local lastClick = 0
 
 FreezeButton.MouseButton1Click:Connect(function()
+    local currentTime = tick()
+    
+    -- Clique duplo para fechar
+    if currentTime - lastClick < 0.3 then
+        ScreenGui:Destroy()
+        return
+    end
+    lastClick = currentTime
+
     local character = game.Players.LocalPlayer.Character
     if not character then return end
     local humanoid = character:FindFirstChild("Humanoid")
     local animateScript = character:FindFirstChild("Animate")
     if not humanoid then return end
-
+    
     isPaused = not isPaused
-
+    
     if isPaused then
-        -- MODO: ESTÁTUA
+        -- MODO: ESTÁTUA (Ícone fixo e animação travada)
         FreezeButton.Image = ID_PARALISADO
-
-        if animateScript then
-            animateScript.Disabled = true
-        end
-
-        local playingTracks = humanoid:GetPlayingAnimationTracks()
-        for _, track in ipairs(playingTracks) do
+        dragging = false -- Garante que pare de arrastar se travar no meio do movimento
+        
+        if animateScript then animateScript.Disabled = true end
+        for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
             track:AdjustSpeed(0)
         end
     else
-        -- MODO: NORMAL
+        -- MODO: NORMAL (Ícone móvel e animação normal)
         FreezeButton.Image = ID_MOVENDO
-
-        if animateScript then
-            animateScript.Disabled = false
-        end
-
-        local playingTracks = humanoid:GetPlayingAnimationTracks()
-        for _, track in ipairs(playingTracks) do
+        if animateScript then animateScript.Disabled = false end
+        for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
             track:AdjustSpeed(1)
         end
     end
 end)
 
-print("Interface Minimalista Ativada: Apenas o ícone está visível.")
+print("V6 Finalizada: Arraste bloqueado durante o Freeze. Clique duplo para fechar.")
